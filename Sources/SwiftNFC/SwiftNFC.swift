@@ -6,8 +6,8 @@ public class NFCReader: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate
     
     public var startAlert = "Hold your iPhone near the tag."
     public var endAlert = ""
-    public var msg = "Scan to read or Edit here to write..."
-    @Published public var raw = "Raw Data available after scan."
+    @Published public var msg = "Scan to read or Edit here to write..."
+    public var raw = "Raw Data available after scan."
 
     public var session: NFCNDEFReaderSession?
     
@@ -31,8 +31,9 @@ public class NFCReader: NSObject, ObservableObject, NFCNDEFReaderSessionDelegate
             }.joined(separator: " ")
             
             self.raw = messages.map {
-                $0.records.map { "\(String(decoding: $0.payload, as: UTF8.self))"}
-                    .joined(separator: "\n")
+                $0.records.map {
+                    "\($0.typeNameFormat) \(String(decoding:$0.type, as: UTF8.self)) \(String(decoding:$0.identifier, as: UTF8.self)) \(String(decoding: $0.payload, as: UTF8.self))"
+                }.joined(separator: "\n")
             }.joined(separator: " ")
 
             session.alertMessage = self.endAlert != "" ? self.endAlert : "Read \(messages.count) NDEF Messages, and \(messages[0].records.count) Records."
